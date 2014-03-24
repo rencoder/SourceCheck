@@ -4,7 +4,6 @@ Imports System.Data.OleDb
 Friend Class SourceCheckerForm
     Private SourcePath$ = String.Empty
     Private ExcelPath$ = String.Empty
-    Private InternalGridSyncTable As New DataTable()            'Not sure whether this is required; may be removed later
     Private SearchPattern$ = "*.*"
     Private SourceContents As New Dictionary(Of String, String())
     Private ExcelFileList As New HashSet(Of String)
@@ -13,15 +12,8 @@ Friend Class SourceCheckerForm
     Private WithEvents BackgroundChecks As New System.ComponentModel.BackgroundWorker() With {.WorkerReportsProgress = True}
 
 #Region "User Interaction Handlers"
-    Private Sub FormLoad(sender As Object, e As EventArgs) Handles Me.Load
-
-    End Sub
-
     Private Sub HeaderTextBoxes_DoubleClick(sender As Object, e As EventArgs) Handles txtFileNameHeader.DoubleClick, txtMessageHeader.DoubleClick
         CType(sender, TextBox).ReadOnly = False
-        If CType(sender, TextBox).Name.Equals("txtExtension") Then
-            CType(sender, TextBox).Text = "cs; vb; js; aspx"
-        End If
     End Sub
 
     Private Sub HeaderFocusLost(sender As Object, e As EventArgs) Handles txtFileNameHeader.LostFocus, txtMessageHeader.LostFocus
@@ -35,8 +27,16 @@ Friend Class SourceCheckerForm
         End If
     End Sub
 
-    Private Sub txtExtension_KeyPress(sender As Object, e As KeyPressEventArgs)
-        e.Handled = Not (Char.IsLetterOrDigit(e.KeyChar) OrElse Char.IsWhiteSpace(e.KeyChar) OrElse e.KeyChar = ChrW(8))
+    Private Sub UpdateGridColumns(ByVal grid As DataGridView, ByVal pair As KeyValuePair(Of String, String), ByVal lineNoOrNegative As Integer)
+        For Each row As DataGridViewRow In grid.Rows()
+            If row.Cells("colRelativePath").Value.ToString().Equals(pair.Key) AndAlso row.Cells("colMessage").Value.ToString().Equals(pair.Value) Then
+                Dim foundOrNot = lineNoOrNegative >= 0
+                row.Cells("colOccurrence").Value = CStr(If(foundOrNot, "Yes", "No"))
+                row.Cells("colLineNumber").Value = CStr(If(foundOrNot, lineNoOrNegative, String.Empty))
+                row.Cells("colOccurrence").Style.BackColor = CType(If(foundOrNot, Color.LightGreen, Color.LightPink), Color)
+            End If
+
+        Next
     End Sub
 
     Private Sub UpdateGrid()
@@ -68,7 +68,6 @@ Friend Class SourceCheckerForm
 
     Private Sub btnRunCheck_Click(sender As Object, e As EventArgs) Handles btnRunCheck.Click
         TEMPTIME.Start()
-
         GetExcelContents()
         TEMPTIME.Stop()
         tsslTimeTaken.Text = "Time Taken: " & CStr(TEMPTIME.Elapsed.TotalMilliseconds)
@@ -76,6 +75,7 @@ Friend Class SourceCheckerForm
 #End Region
 
     Private Sub GetExcelContents()
+        If ExcelPath.Trim().Equals(String.Empty) Then MessageBox.Show("Excel file does not exist.", "File not found", MessageBoxButtons.OK) : Exit Sub
         Dim con As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ExcelPath & ";Extended Properties=Excel 12.0;")
         Dim da As New OleDbDataAdapter("select * from [ErrorMessages$]", con)
         Dim excelTable As New DataTable()
@@ -134,7 +134,6 @@ Friend Class SourceCheckerForm
             count += 1
             BackgroundChecks.ReportProgress(count)
         Next
-
     End Sub
 
     Private Function CheckSourceContents(ByVal sourceString() As String, pair As KeyValuePair(Of String, String))
@@ -154,22 +153,10 @@ Friend Class SourceCheckerForm
         Return -1
     End Function
 
-    Private Sub UpdateGridColumns(ByVal grid As DataGridView, ByVal pair As KeyValuePair(Of String, String), ByVal lineNoOrNegative As Integer)
-        For Each row As DataGridViewRow In grid.Rows()
-            If row.Cells("colRelativePath").Value.ToString().Equals(pair.Key) AndAlso row.Cells("colMessage").Value.ToString().Equals(pair.Value) Then
-                Dim foundOrNot = lineNoOrNegative >= 0
-                row.Cells("colOccurrence").Value = CStr(If(foundOrNot, "Yes", "No"))
-                row.Cells("colLineNumber").Value = CStr(If(foundOrNot, lineNoOrNegative, String.Empty))
-                row.Cells("colOccurrence").Style.BackColor = CType(If(foundOrNot, Color.LightGreen, Color.LightPink), Color)
-            End If
-
-        Next
-    End Sub
-
     Private Sub btnReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
         SourceContents.Clear()
         ExcelContents.Clear()
         ExcelFileList.Clear()
+        ProgressBarLoading.Visible = False
     End Sub
-
 End Class
