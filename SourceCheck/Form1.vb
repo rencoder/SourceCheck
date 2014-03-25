@@ -13,6 +13,10 @@ Friend Class SourceCheckerForm
     Private WithEvents BackgroundChecks As New System.ComponentModel.BackgroundWorker() With {.WorkerReportsProgress = True}
 
 #Region "User Interaction Handlers"
+    Private Sub FormLoad(sender As Object, e As EventArgs) Handles Me.Load
+
+    End Sub
+
     Private Sub HeaderTextBoxes_DoubleClick(sender As Object, e As EventArgs) Handles txtFileNameHeader.DoubleClick, txtMessageHeader.DoubleClick
         CType(sender, TextBox).ReadOnly = False
         If CType(sender, TextBox).Name.Equals("txtExtension") Then

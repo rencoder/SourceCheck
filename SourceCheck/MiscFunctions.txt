@@ -5,7 +5,7 @@
         For Each filePath In wantedFiles
             Dim relativePath$ = GetRelativePath(filePath)
             If Not SourceContents.ContainsKey(relativePath) Then
-                SourceContents.Add(relativePath, File.ReadAllText(filePath))
+                SourceContents.Add(relativePath, File.ReadAllLines(filePath))
             End If
         Next
     End Sub
@@ -13,16 +13,16 @@
     Sub GenerateExcelDummyFile()
         SourcePath = "D:\Documents\Visual Studio Projects\FinalCode\FSBS3\"
         GetSourceContents()
-        Dim rand As Random
-        Dim getEntryValues = Function(s$) As String
-                                 Dim lines As String() = s.Split(New Char() {Environment.NewLine()})
-                                 Return lines(rand.Next(lines.Length))
+        Dim randomNo As Random
+        Dim getEntryValues = Function(lines$()) As String
+                                 Return lines(randomNo.Next(lines.Length))
                              End Function
 
         Dim excelWriter As New List(Of KeyValuePair(Of String, String))
         For Each entry In SourceContents
-            rand = New Random(DateTime.Now.GetHashCode())
-            For i = 1 To 9
+            If entry.Value.Length < 4 Then Continue For
+            randomNo = New Random(DateTime.Now.GetHashCode)
+            For i = 1 To 12
                 excelWriter.Add(New KeyValuePair(Of String, String)(entry.Key, getEntryValues(entry.Value)))
             Next
         Next

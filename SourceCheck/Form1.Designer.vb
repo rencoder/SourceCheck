@@ -32,6 +32,10 @@ Partial Class SourceCheckerForm
         Dim TableLayoutPanel3 As System.Windows.Forms.TableLayoutPanel
         Me.txtSourcePath = New System.Windows.Forms.TextBox()
         Me.GridInformation = New System.Windows.Forms.DataGridView()
+        Me.colRelativePath = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colMessage = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colOccurrence = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colLineNumber = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.txtExcelPath = New System.Windows.Forms.TextBox()
         Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
         Me.txtMessageHeader = New System.Windows.Forms.TextBox()
@@ -43,10 +47,6 @@ Partial Class SourceCheckerForm
         Me.StatusBar = New System.Windows.Forms.StatusStrip()
         Me.ProgressBarLoading = New System.Windows.Forms.ToolStripProgressBar()
         Me.tsslTimeTaken = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.colRelativePath = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colMessage = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colOccurrence = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colLineNumber = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Label1 = New System.Windows.Forms.Label()
         TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Label2 = New System.Windows.Forms.Label()
@@ -121,6 +121,7 @@ Partial Class SourceCheckerForm
         '
         Me.GridInformation.AllowUserToAddRows = False
         Me.GridInformation.AllowUserToDeleteRows = False
+        Me.GridInformation.AllowUserToOrderColumns = True
         Me.GridInformation.AllowUserToResizeRows = False
         Me.GridInformation.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.GridInformation.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colRelativePath, Me.colMessage, Me.colOccurrence, Me.colLineNumber})
@@ -134,6 +135,39 @@ Partial Class SourceCheckerForm
         Me.GridInformation.RowTemplate.Height = 40
         Me.GridInformation.Size = New System.Drawing.Size(907, 392)
         Me.GridInformation.TabIndex = 2
+        '
+        'colRelativePath
+        '
+        Me.colRelativePath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colRelativePath.DataPropertyName = "File Name"
+        Me.colRelativePath.HeaderText = "Relative Path"
+        Me.colRelativePath.Name = "colRelativePath"
+        Me.colRelativePath.ReadOnly = True
+        Me.colRelativePath.Width = 200
+        '
+        'colMessage
+        '
+        Me.colMessage.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colMessage.DataPropertyName = "Message"
+        Me.colMessage.HeaderText = "Message"
+        Me.colMessage.Name = "colMessage"
+        Me.colMessage.ReadOnly = True
+        Me.colMessage.Width = 504
+        '
+        'colOccurrence
+        '
+        Me.colOccurrence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colOccurrence.HeaderText = "Occurrence"
+        Me.colOccurrence.Name = "colOccurrence"
+        Me.colOccurrence.ReadOnly = True
+        '
+        'colLineNumber
+        '
+        Me.colLineNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colLineNumber.HeaderText = "Line Number"
+        Me.colLineNumber.Name = "colLineNumber"
+        Me.colLineNumber.ReadOnly = True
+        Me.colLineNumber.Width = 110
         '
         'Label2
         '
@@ -339,39 +373,6 @@ Partial Class SourceCheckerForm
         Me.tsslTimeTaken.Name = "tsslTimeTaken"
         Me.tsslTimeTaken.Size = New System.Drawing.Size(75, 19)
         Me.tsslTimeTaken.Text = "Time Taken: "
-        '
-        'colRelativePath
-        '
-        Me.colRelativePath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.colRelativePath.DataPropertyName = "File Name"
-        Me.colRelativePath.HeaderText = "Relative Path"
-        Me.colRelativePath.Name = "colRelativePath"
-        Me.colRelativePath.ReadOnly = True
-        Me.colRelativePath.Width = 200
-        '
-        'colMessage
-        '
-        Me.colMessage.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.colMessage.DataPropertyName = "Message"
-        Me.colMessage.HeaderText = "Message"
-        Me.colMessage.Name = "colMessage"
-        Me.colMessage.ReadOnly = True
-        Me.colMessage.Width = 504
-        '
-        'colOccurrence
-        '
-        Me.colOccurrence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.colOccurrence.HeaderText = "Occurrence"
-        Me.colOccurrence.Name = "colOccurrence"
-        Me.colOccurrence.ReadOnly = True
-        '
-        'colLineNumber
-        '
-        Me.colLineNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.colLineNumber.HeaderText = "Line Number"
-        Me.colLineNumber.Name = "colLineNumber"
-        Me.colLineNumber.ReadOnly = True
-        Me.colLineNumber.Width = 110
         '
         'SourceCheckerForm
         '
