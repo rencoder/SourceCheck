@@ -1,0 +1,43 @@
+﻿    Sub GetSourceContents()
+        Dim fileList = Directory.GetFiles(SourcePath, SearchPattern, SearchOption.AllDirectories)
+        Dim wantedFiles = fileList.Where(Function(c) (c.EndsWith("vb")))
+
+        For Each filePath In wantedFiles
+            Dim relativePath$ = GetRelativePath(filePath)
+            If Not SourceContents.ContainsKey(relativePath) Then
+                SourceContents.Add(relativePath, File.ReadAllText(filePath))
+            End If
+        Next
+    End Sub
+
+    Sub GenerateExcelDummyFile()
+        SourcePath = "D:\Documents\Visual Studio Projects\FinalCode\FSBS3\"
+        GetSourceContents()
+        Dim rand As Random
+        Dim getEntryValues = Function(s$) As String
+                                 Dim lines As String() = s.Split(New Char() {Environment.NewLine()})
+                                 Return lines(rand.Next(lines.Length))
+                             End Function
+
+        Dim excelWriter As New List(Of KeyValuePair(Of String, String))
+        For Each entry In SourceContents
+            rand = New Random(DateTime.Now.GetHashCode())
+            For i = 1 To 9
+                excelWriter.Add(New KeyValuePair(Of String, String)(entry.Key, getEntryValues(entry.Value)))
+            Next
+        Next
+
+        Dim xl As New Microsoft.Office.Interop.Excel.Application
+        xl.Visible = True
+        xl.Workbooks.Add()
+        Dim ws As Microsoft.Office.Interop.Excel.Worksheet = CType(xl.ActiveSheet, Microsoft.Office.Interop.Excel.Worksheet)
+        ws.Cells(1, "A") = "File Name"
+        ws.Cells(1, "B") = "Message"
+        Dim row = 2
+        For Each item In excelWriter
+            ws.Cells(row, "A") = item.Key
+            ws.Cells(row, "B") = item.Value
+            row += 1
+        Next
+        ws.Columns.AutoFit()
+    End Sub
