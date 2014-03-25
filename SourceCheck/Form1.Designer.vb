@@ -32,21 +32,21 @@ Partial Class SourceCheckerForm
         Dim TableLayoutPanel3 As System.Windows.Forms.TableLayoutPanel
         Me.txtSourcePath = New System.Windows.Forms.TextBox()
         Me.GridInformation = New System.Windows.Forms.DataGridView()
-        Me.colRelativePath = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colMessage = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colOccurrence = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colFileExists = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.txtExcelPath = New System.Windows.Forms.TextBox()
         Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
         Me.txtMessageHeader = New System.Windows.Forms.TextBox()
         Me.txtFileNameHeader = New System.Windows.Forms.TextBox()
         Me.chkCase = New System.Windows.Forms.CheckBox()
+        Me.chkRemoveSplChars = New System.Windows.Forms.CheckBox()
         Me.btnRunCheck = New System.Windows.Forms.Button()
         Me.btnReset = New System.Windows.Forms.Button()
         Me.StatusBar = New System.Windows.Forms.StatusStrip()
         Me.ProgressBarLoading = New System.Windows.Forms.ToolStripProgressBar()
         Me.tsslTimeTaken = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.chkRemoveSplChars = New System.Windows.Forms.CheckBox()
+        Me.colRelativePath = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colMessage = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colOccurrence = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colLineNumber = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Label1 = New System.Windows.Forms.Label()
         TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Label2 = New System.Windows.Forms.Label()
@@ -123,7 +123,7 @@ Partial Class SourceCheckerForm
         Me.GridInformation.AllowUserToDeleteRows = False
         Me.GridInformation.AllowUserToResizeRows = False
         Me.GridInformation.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GridInformation.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colRelativePath, Me.colMessage, Me.colOccurrence, Me.colFileExists})
+        Me.GridInformation.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colRelativePath, Me.colMessage, Me.colOccurrence, Me.colLineNumber})
         TableLayoutPanel1.SetColumnSpan(Me.GridInformation, 2)
         Me.GridInformation.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GridInformation.Location = New System.Drawing.Point(0, 143)
@@ -134,35 +134,6 @@ Partial Class SourceCheckerForm
         Me.GridInformation.RowTemplate.Height = 40
         Me.GridInformation.Size = New System.Drawing.Size(907, 392)
         Me.GridInformation.TabIndex = 2
-        '
-        'colRelativePath
-        '
-        Me.colRelativePath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.colRelativePath.DataPropertyName = "File Name"
-        Me.colRelativePath.HeaderText = "Relative Path"
-        Me.colRelativePath.Name = "colRelativePath"
-        Me.colRelativePath.ReadOnly = True
-        Me.colRelativePath.Width = 200
-        '
-        'colMessage
-        '
-        Me.colMessage.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        Me.colMessage.DataPropertyName = "Message"
-        Me.colMessage.HeaderText = "Message"
-        Me.colMessage.Name = "colMessage"
-        Me.colMessage.ReadOnly = True
-        '
-        'colOccurrence
-        '
-        Me.colOccurrence.HeaderText = "Occurrence"
-        Me.colOccurrence.Name = "colOccurrence"
-        Me.colOccurrence.ReadOnly = True
-        '
-        'colFileExists
-        '
-        Me.colFileExists.HeaderText = "Existence"
-        Me.colFileExists.Name = "colFileExists"
-        Me.colFileExists.ReadOnly = True
         '
         'Label2
         '
@@ -279,6 +250,19 @@ Partial Class SourceCheckerForm
         Me.chkCase.Text = "Case Sensitive"
         Me.chkCase.UseVisualStyleBackColor = True
         '
+        'chkRemoveSplChars
+        '
+        Me.chkRemoveSplChars.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.chkRemoveSplChars.AutoSize = True
+        Me.chkRemoveSplChars.Checked = True
+        Me.chkRemoveSplChars.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.chkRemoveSplChars.Location = New System.Drawing.Point(116, 3)
+        Me.chkRemoveSplChars.Name = "chkRemoveSplChars"
+        Me.chkRemoveSplChars.Size = New System.Drawing.Size(127, 21)
+        Me.chkRemoveSplChars.TabIndex = 7
+        Me.chkRemoveSplChars.Text = "Remove Period (.)"
+        Me.chkRemoveSplChars.UseVisualStyleBackColor = True
+        '
         'FlowLayoutPanel1
         '
         FlowLayoutPanel1.AutoSize = True
@@ -356,18 +340,38 @@ Partial Class SourceCheckerForm
         Me.tsslTimeTaken.Size = New System.Drawing.Size(75, 19)
         Me.tsslTimeTaken.Text = "Time Taken: "
         '
-        'chkRemoveSplChars
+        'colRelativePath
         '
-        Me.chkRemoveSplChars.Anchor = System.Windows.Forms.AnchorStyles.Left
-        Me.chkRemoveSplChars.AutoSize = True
-        Me.chkRemoveSplChars.Checked = True
-        Me.chkRemoveSplChars.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkRemoveSplChars.Location = New System.Drawing.Point(116, 3)
-        Me.chkRemoveSplChars.Name = "chkRemoveSplChars"
-        Me.chkRemoveSplChars.Size = New System.Drawing.Size(127, 21)
-        Me.chkRemoveSplChars.TabIndex = 7
-        Me.chkRemoveSplChars.Text = "Remove Period (.)"
-        Me.chkRemoveSplChars.UseVisualStyleBackColor = True
+        Me.colRelativePath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colRelativePath.DataPropertyName = "File Name"
+        Me.colRelativePath.HeaderText = "Relative Path"
+        Me.colRelativePath.Name = "colRelativePath"
+        Me.colRelativePath.ReadOnly = True
+        Me.colRelativePath.Width = 200
+        '
+        'colMessage
+        '
+        Me.colMessage.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colMessage.DataPropertyName = "Message"
+        Me.colMessage.HeaderText = "Message"
+        Me.colMessage.Name = "colMessage"
+        Me.colMessage.ReadOnly = True
+        Me.colMessage.Width = 504
+        '
+        'colOccurrence
+        '
+        Me.colOccurrence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colOccurrence.HeaderText = "Occurrence"
+        Me.colOccurrence.Name = "colOccurrence"
+        Me.colOccurrence.ReadOnly = True
+        '
+        'colLineNumber
+        '
+        Me.colLineNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colLineNumber.HeaderText = "Line Number"
+        Me.colLineNumber.Name = "colLineNumber"
+        Me.colLineNumber.ReadOnly = True
+        Me.colLineNumber.Width = 110
         '
         'SourceCheckerForm
         '
@@ -375,6 +379,7 @@ Partial Class SourceCheckerForm
         Me.ClientSize = New System.Drawing.Size(907, 562)
         Me.Controls.Add(TableLayoutPanel3)
         Me.Font = New System.Drawing.Font("Calibri", 10.0!)
+        Me.MinimumSize = New System.Drawing.Size(923, 600)
         Me.Name = "SourceCheckerForm"
         Me.ShowIcon = False
         Me.Text = "Source Checker"
@@ -399,10 +404,6 @@ Partial Class SourceCheckerForm
     Friend WithEvents TableLayoutPanel2 As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents txtMessageHeader As System.Windows.Forms.TextBox
     Friend WithEvents txtFileNameHeader As System.Windows.Forms.TextBox
-    Friend WithEvents colRelativePath As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents colMessage As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents colOccurrence As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents colFileExists As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents StatusBar As System.Windows.Forms.StatusStrip
     Friend WithEvents ProgressBarLoading As System.Windows.Forms.ToolStripProgressBar
     Friend WithEvents tsslTimeTaken As System.Windows.Forms.ToolStripStatusLabel
@@ -410,5 +411,9 @@ Partial Class SourceCheckerForm
     Friend WithEvents btnRunCheck As System.Windows.Forms.Button
     Friend WithEvents btnReset As System.Windows.Forms.Button
     Friend WithEvents chkRemoveSplChars As System.Windows.Forms.CheckBox
+    Friend WithEvents colRelativePath As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents colMessage As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents colOccurrence As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents colLineNumber As System.Windows.Forms.DataGridViewTextBoxColumn
 
 End Class

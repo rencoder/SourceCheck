@@ -6,7 +6,7 @@ Friend Class SourceCheckerForm
     Private ExcelPath$ = String.Empty
     Private InternalGridSyncTable As New DataTable()            'Not sure whether this is required; may be removed later
     Private SearchPattern$ = "*.*"
-    Private SourceContents As New Dictionary(Of String, String)
+    Private SourceContents As New Dictionary(Of String, String())
     Private ExcelFileList As New HashSet(Of String)
     Private ExcelContents As New List(Of KeyValuePair(Of String, String))
     Private TEMPTIME As New Stopwatch()
@@ -37,16 +37,7 @@ Friend Class SourceCheckerForm
 
     Private Sub UpdateGrid()
         For Each item In ExcelContents
-            GridInformation.Rows.Add(item.Key, item.Value, String.Empty, CStr(If(SourceContents.ContainsKey(item.Key), String.Empty, "Invalid file")))
-        Next
-    End Sub
-
-    Private Sub UpdateOccurrenceColumn(ByVal grid As DataGridView, ByVal pair As KeyValuePair(Of String, String), ByVal occursOrNot As Boolean)
-        For Each row As DataGridViewRow In grid.Rows()
-            If row.Cells("colRelativePath").Value.ToString().Equals(pair.Key) AndAlso row.Cells("colMessage").Value.ToString().Equals(pair.Value) Then
-                row.Cells("colOccurrence").Value = CStr(If(occursOrNot = True, "Yes", "No"))
-                row.Cells("colOccurrence").Style.BackColor = CType(If(occursOrNot = True, Color.LightGreen, Color.LightPink), Color)
-            End If
+            GridInformation.Rows.Add(item.Key, item.Value, String.Empty, String.Empty)
         Next
     End Sub
 
@@ -109,7 +100,7 @@ Friend Class SourceCheckerForm
         For Each filePath In wantedFiles
             Dim relativePath$ = GetRelativePath(filePath)
             If ExcelFileList.Contains(relativePath) Then
-                SourceContents.Add(relativePath, File.ReadAllText(filePath))
+                SourceContents.Add(relativePath, File.ReadAllLines(filePath))
             End If
         Next
     End Sub
@@ -134,12 +125,41 @@ Friend Class SourceCheckerForm
         Dim count As Integer = 0
         For Each fileNameMessagePair In ExcelContents
             If SourceContents.ContainsKey(fileNameMessagePair.Key) Then
-                UpdateOccurrenceColumn(GridInformation, fileNameMessagePair, If(chkCase.Checked, SourceContents(fileNameMessagePair.Key).Contains(fileNameMessagePair.Value), SourceContents(fileNameMessagePair.Key).IndexOf(fileNameMessagePair.Value, StringComparison.OrdinalIgnoreCase) >= 0))
+                UpdateGridColumns(GridInformation, fileNameMessagePair, CheckSourceContents(SourceContents(fileNameMessagePair.Key), fileNameMessagePair))
             End If
             count += 1
             BackgroundChecks.ReportProgress(count)
         Next
 
+    End Sub
+
+    Private Function CheckSourceContents(ByVal sourceString() As String, pair As KeyValuePair(Of String, String))
+        If True = chkCase.Checked Then
+            For i = 0 To sourceString.Length - 1
+                If sourceString(i).Contains(pair.Value) Then
+                    Return i + 1
+                End If
+            Next
+        Else
+            For i = 0 To sourceString.Length - 1
+                If sourceString(i).IndexOf(pair.Value, StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    Return i + 1
+                End If
+            Next
+        End If
+        Return -1
+    End Function
+
+    Private Sub UpdateGridColumns(ByVal grid As DataGridView, ByVal pair As KeyValuePair(Of String, String), ByVal lineNoOrNegative As Integer)
+        For Each row As DataGridViewRow In grid.Rows()
+            If row.Cells("colRelativePath").Value.ToString().Equals(pair.Key) AndAlso row.Cells("colMessage").Value.ToString().Equals(pair.Value) Then
+                Dim foundOrNot = lineNoOrNegative >= 0
+                row.Cells("colOccurrence").Value = CStr(If(foundOrNot, "Yes", "No"))
+                row.Cells("colLineNumber").Value = CStr(If(foundOrNot, lineNoOrNegative, String.Empty))
+                row.Cells("colOccurrence").Style.BackColor = CType(If(foundOrNot, Color.LightGreen, Color.LightPink), Color)
+            End If
+
+        Next
     End Sub
 
     Private Sub btnReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
