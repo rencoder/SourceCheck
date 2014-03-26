@@ -7,7 +7,7 @@ Friend Class SourceCheckerForm
     Private SearchPattern$ = "*.*"
     Private SourceContents As New Dictionary(Of String, String())
     Private ExcelFileList As New HashSet(Of String)
-    Private ExcelContents As New List(Of KeyValuePair(Of String, String))
+    Private ExcelContents As New Dictionary(Of Short, KeyValuePair(Of String, String))
     Private TEMPTIME As New Stopwatch()
     Private WithEvents BackgroundChecks As New System.ComponentModel.BackgroundWorker() With {.WorkerReportsProgress = True}
 
@@ -41,7 +41,7 @@ Friend Class SourceCheckerForm
 
     Private Sub UpdateGrid()
         For Each item In ExcelContents
-            GridInformation.Rows.Add(item.Key, item.Value, String.Empty, String.Empty)
+            GridInformation.Rows.Add(item.Key, item.Value.Key, item.Value.Value, String.Empty, String.Empty)
         Next
     End Sub
 
@@ -79,13 +79,15 @@ Friend Class SourceCheckerForm
         Dim con As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ExcelPath & ";Extended Properties=Excel 12.0;")
         Dim da As New OleDbDataAdapter("select * from [ErrorMessages$]", con)
         Dim excelTable As New DataTable()
+        Dim counter As Integer = 0
         da.Fill(excelTable)
-        Dim fileColName = excelTable.Columns(0).ColumnName
-        Dim msgColName = excelTable.Columns(1).ColumnName
+        Dim numbering = excelTable.Columns(0).ColumnName
+        Dim fileColName = excelTable.Columns(1).ColumnName
+        Dim msgColName = excelTable.Columns(2).ColumnName
 
         For Each row As DataRow In excelTable.Rows()
-            If Not IsDBNull(row(fileColName)) And Not IsDBNull(row(msgColName)) Then
-                ExcelContents.Add(New KeyValuePair(Of String, String)(System.Text.RegularExpressions.Regex.Replace(row(fileColName).ToString(), " ?\(.*?\)", String.Empty), If(chkRemoveSplChars.Checked, row(msgColName).ToString.Trim.TrimEnd("."c), row(msgColName))))
+            If Not IsDBNull(row(fileColName)) AndAlso Not IsDBNull(row(msgColName)) Then
+                ExcelContents.Add(row(numbering), New KeyValuePair(Of String, String)(System.Text.RegularExpressions.Regex.Replace(row(fileColName).ToString(), " ?\(.*?\)", String.Empty), If(chkRemoveSplChars.Checked, row(msgColName).ToString.Trim.TrimEnd("."c), row(msgColName))))
                 ExcelFileList.Add(System.Text.RegularExpressions.Regex.Replace(row(fileColName).ToString(), " ?\(.*?\)", String.Empty))
             End If
         Next
@@ -128,8 +130,8 @@ Friend Class SourceCheckerForm
     Private Sub RunChecks()
         Dim count As Integer = 0
         For Each fileNameMessagePair In ExcelContents
-            If SourceContents.ContainsKey(fileNameMessagePair.Key) Then
-                UpdateGridColumns(GridInformation, fileNameMessagePair, CheckSourceContents(SourceContents(fileNameMessagePair.Key), fileNameMessagePair))
+            If SourceContents.ContainsKey(fileNameMessagePair.Value.Key) Then
+                UpdateGridColumns(GridInformation, fileNameMessagePair.Value, CheckSourceContents(SourceContents(fileNameMessagePair.Value.Key), fileNameMessagePair.Value))
             End If
             count += 1
             BackgroundChecks.ReportProgress(count)

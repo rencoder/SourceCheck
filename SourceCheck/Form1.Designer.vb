@@ -32,6 +32,7 @@ Partial Class SourceCheckerForm
         Dim TableLayoutPanel3 As System.Windows.Forms.TableLayoutPanel
         Me.txtSourcePath = New System.Windows.Forms.TextBox()
         Me.GridInformation = New System.Windows.Forms.DataGridView()
+        Me.colHash = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colRelativePath = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colMessage = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colOccurrence = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -124,7 +125,7 @@ Partial Class SourceCheckerForm
         Me.GridInformation.AllowUserToOrderColumns = True
         Me.GridInformation.AllowUserToResizeRows = False
         Me.GridInformation.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GridInformation.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colRelativePath, Me.colMessage, Me.colOccurrence, Me.colLineNumber})
+        Me.GridInformation.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colHash, Me.colRelativePath, Me.colMessage, Me.colOccurrence, Me.colLineNumber})
         TableLayoutPanel1.SetColumnSpan(Me.GridInformation, 2)
         Me.GridInformation.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GridInformation.Location = New System.Drawing.Point(0, 143)
@@ -135,6 +136,14 @@ Partial Class SourceCheckerForm
         Me.GridInformation.RowTemplate.Height = 40
         Me.GridInformation.Size = New System.Drawing.Size(907, 392)
         Me.GridInformation.TabIndex = 2
+        '
+        'colHash
+        '
+        Me.colHash.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.colHash.HeaderText = "#"
+        Me.colHash.Name = "colHash"
+        Me.colHash.ReadOnly = True
+        Me.colHash.Width = 35
         '
         'colRelativePath
         '
@@ -152,7 +161,7 @@ Partial Class SourceCheckerForm
         Me.colMessage.HeaderText = "Message"
         Me.colMessage.Name = "colMessage"
         Me.colMessage.ReadOnly = True
-        Me.colMessage.Width = 504
+        Me.colMessage.Width = 400
         '
         'colOccurrence
         '
@@ -412,6 +421,7 @@ Partial Class SourceCheckerForm
     Friend WithEvents btnRunCheck As System.Windows.Forms.Button
     Friend WithEvents btnReset As System.Windows.Forms.Button
     Friend WithEvents chkRemoveSplChars As System.Windows.Forms.CheckBox
+    Friend WithEvents colHash As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents colRelativePath As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents colMessage As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents colOccurrence As System.Windows.Forms.DataGridViewTextBoxColumn
